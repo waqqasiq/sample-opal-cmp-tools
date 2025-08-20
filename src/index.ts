@@ -1,6 +1,6 @@
 import express from 'express';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders } from './folders';
+import { getRootFolders, getAllFolders } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -48,6 +48,20 @@ class Tools {
     catch (error: any) {
       console.error('Error fetching CMP fields:', error.message);
       throw new Error('Failed to fetch CMP fields');
+    }
+  }
+  @tool({
+    name: 'get_cmp_all_folders',
+    description: 'Fetch all CMP folders including nested children',
+    parameters: []
+  })
+  async getCmpAllFolders(_body: any) {
+    try {
+      const folders = await getAllFolders();
+      return { folders };
+    } catch (error: any) {
+      console.error('Error fetching all CMP folders:', error.message);
+      throw new Error('Failed to fetch all CMP folders');
     }
   }
 }
