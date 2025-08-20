@@ -9,10 +9,16 @@ export interface IFolder {
   path?: string;
   created_at?: string;
   modified_at?: string;
-  links?: Record<string, any>;
+  links?: {
+    self: string;
+    parent_folder: string | null;
+    child_folders: string;
+    assets: string;
+  };
   children?: IFolder[];
   [key: string]: any;
 }
+
 
 export const getRootFolders = async (): Promise<IFolder[]> => {
   const headers = await getHeaderValues();
@@ -43,13 +49,16 @@ export const getRootFolders = async (): Promise<IFolder[]> => {
   return rootFolders;
 };
 
+/**
+ * Fetch folders recursively, including all nested child folders
+ */
 export const getAllFolders = async (): Promise<IFolder[]> => {
   const headers = await getHeaderValues();
   const pageSize = 100;
   let offset = 0;
   let allFolders: IFolder[] = [];
 
-  // fetch all folders with pagination
+  // fetch all folders (top-level)
   while (true) {
     const url = `${CMP_BASE_URL}/v3/folders?offset=${offset}&page_size=${pageSize}`;
     const res = await axios.get(url, { headers });
@@ -57,27 +66,29 @@ export const getAllFolders = async (): Promise<IFolder[]> => {
     const folders: IFolder[] = res.data?.data || [];
     allFolders = allFolders.concat(folders);
 
-    if (folders.length < pageSize) break; // last page
+    if (folders.length < pageSize) break;
     offset += pageSize;
   }
 
-  // Build nested folder tree
-  const folderMap: Record<string, IFolder> = {};
-  const rootFolders: IFolder[] = [];
-
-  allFolders.forEach(folder => {
-    folder.children = [];
-    folderMap[folder.id] = folder;
-  });
-
-  allFolders.forEach(folder => {
-    if (folder.parent_folder_id) {
-      const parent = folderMap[folder.parent_folder_id];
-      if (parent) parent.children!.push(folder);
+  // Recursively fetch children
+  const fetchChildren = async (folder: IFolder) => {
+    if (folder.links?.child_folders) {
+      const res = await axios.get(folder.links.child_folders, { headers });
+      const children: IFolder[] = res.data?.data || [];
+      folder.children = children;
+      for (const child of children) {
+        await fetchChildren(child);
+      }
     } else {
-      rootFolders.push(folder);
+      folder.children = [];
     }
-  });
+  };
 
-  return rootFolders;
+  // fetch children for all top-level folders
+  for (const folder of allFolders.filter(f => !f.parent_folder_id)) {
+    await fetchChildren(folder);
+  }
+
+  // return only root folders
+  return allFolders.filter(f => !f.parent_folder_id);
 };
