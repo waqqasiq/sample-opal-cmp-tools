@@ -1,0 +1,25 @@
+{
+  "name": "opal-tools-sdk-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --project tsconfig.json --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@optimizely-opal/opal-tools-sdk": "^0.1.0-dev",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.15",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}

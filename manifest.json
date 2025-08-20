@@ -1,0 +1,11 @@
+{
+    "name": "opal-tools-sdk-test",
+    "description": "Opal Tools SDK Test Application",
+    "parameters": {
+        "ACCESS_TOKEN_TEST": {
+            "label": "Access token URL",
+            "type": "string",
+            "required": false
+        }
+    }
+}
