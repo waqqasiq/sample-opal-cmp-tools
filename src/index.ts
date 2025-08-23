@@ -24,10 +24,23 @@ class Tools {
   @tool({
     name: 'get_cmp_root_folders',
     description: 'Fetches root-level folders from CMP library',
-    parameters: [] // no parameters needed for root folders
+    parameters: [], // no parameters needed for root folders
+    authRequirements: {
+      provider: 'optimizely',
+      scopeBundle: 'opti-id',
+      required: true
+    }
   })
-  async getCmpRootFolders(_body: any) {
+  async getCmpRootFolders(_body: any, authData?: any) {
     try {
+
+      const provider = authData?.provider || '';
+      const token = authData?.credentials?.token || '';
+
+      console.log('Auth Provider:', provider);
+      console.log('Auth Token:', token ? 'Token received' : 'No token');
+      console.log('token ', token);
+
       const folders = await getRootFolders();
       return { folders };
     } catch (error: any) {
@@ -38,10 +51,23 @@ class Tools {
   @tool({
     name: 'get_cmp_fields',
     description: 'Fetch all CMP fields with pagination',
-    parameters: []
+    parameters: [],
+    authRequirements: {
+      provider: 'optimizely',
+      scopeBundle: 'opti-id',
+      required: true
+    }
   })
-  async getCmpFields(_body: any) {
+  async getCmpFields(_body: any, authData?: any) {
     try {
+
+      const provider = authData?.provider || '';
+      const token = authData?.credentials?.token || '';
+
+      console.log('Auth Provider:', provider);
+      console.log('Auth Token:', token ? 'Token received' : 'No token');
+      console.log('token ', token);
+
       const fields = await getAllFields();
       return { fields };
     }
@@ -53,10 +79,23 @@ class Tools {
   @tool({
     name: 'get_cmp_all_folders',
     description: 'Fetch all CMP folders including nested children',
-    parameters: []
+    parameters: [],
+    authRequirements: {
+      provider: 'optimizely',
+      scopeBundle: 'opti-id',
+      required: true
+    }
   })
-  async getCmpAllFolders(_body: any) {
+  async getCmpAllFolders(_body: any, authData?: any) {
     try {
+
+      const provider = authData?.provider || '';
+      const token = authData?.credentials?.token || '';
+
+      console.log('Auth Provider:', provider);
+      console.log('Auth Token:', token ? 'Token received' : 'No token');
+      console.log('token ', token);
+      
       const folders = await getAllFolders();
       return { folders };
     } catch (error: any) {
