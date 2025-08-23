@@ -26,8 +26,8 @@ class Tools {
     description: 'Fetches root-level folders from CMP library',
     parameters: [], // no parameters needed for root folders
     authRequirements: {
-      provider: 'optimizely',
-      scopeBundle: 'opti-id',
+      provider: 'opti-id',
+      scopeBundle: 'opti-id-token',
       required: true
     }
   })
@@ -53,8 +53,8 @@ class Tools {
     description: 'Fetch all CMP fields with pagination',
     parameters: [],
     authRequirements: {
-      provider: 'optimizely',
-      scopeBundle: 'opti-id',
+      provider: 'opti-id',
+      scopeBundle: 'opti-id-token',
       required: true
     }
   })
@@ -81,8 +81,8 @@ class Tools {
     description: 'Fetch all CMP folders including nested children',
     parameters: [],
     authRequirements: {
-      provider: 'optimizely',
-      scopeBundle: 'opti-id',
+      provider: 'opti-id',
+      scopeBundle: 'opti-id-token',
       required: true
     }
   })
@@ -95,7 +95,7 @@ class Tools {
       console.log('Auth Provider:', provider);
       console.log('Auth Token:', token ? 'Token received' : 'No token');
       console.log('token ', token);
-      
+
       const folders = await getAllFolders();
       return { folders };
     } catch (error: any) {
