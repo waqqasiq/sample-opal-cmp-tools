@@ -17,6 +17,7 @@ export const getCmpAccessToken = async (): Promise<string> => {
     );
 
     token = res.data.access_token;
+    console.log('client bearer token ', token);
     tokenExpiry = Date.now() + res.data.expires_in * 1000;
   }
 

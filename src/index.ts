@@ -26,8 +26,8 @@ class Tools {
     description: 'Fetches root-level folders from CMP library',
     parameters: [], // no parameters needed for root folders
     authRequirements: {
-      provider: 'opti-id',
-      scopeBundle: 'opti-id-token',
+      provider: 'OptiID',
+      scopeBundle: 'scheme',
       required: true
     }
   })
@@ -35,7 +35,7 @@ class Tools {
     try {
 
       const provider = authData?.provider || '';
-      const token = authData?.credentials?.token || '';
+      const token = authData?.credentials?.access_token || '';
 
       console.log('Auth Provider:', provider);
       console.log('Auth Token:', token ? 'Token received' : 'No token');
@@ -53,8 +53,8 @@ class Tools {
     description: 'Fetch all CMP fields with pagination',
     parameters: [],
     authRequirements: {
-      provider: 'opti-id',
-      scopeBundle: 'opti-id-token',
+      provider: 'OptiID',
+      scopeBundle: 'scheme',
       required: true
     }
   })
@@ -62,7 +62,7 @@ class Tools {
     try {
 
       const provider = authData?.provider || '';
-      const token = authData?.credentials?.token || '';
+      const token = authData?.credentials?.access_token || '';
 
       console.log('Auth Provider:', provider);
       console.log('Auth Token:', token ? 'Token received' : 'No token');
@@ -81,8 +81,8 @@ class Tools {
     description: 'Fetch all CMP folders including nested children',
     parameters: [],
     authRequirements: {
-      provider: 'opti-id',
-      scopeBundle: 'opti-id-token',
+      provider: 'OptiID',
+      scopeBundle: 'scheme',
       required: true
     }
   })
@@ -90,7 +90,7 @@ class Tools {
     try {
 
       const provider = authData?.provider || '';
-      const token = authData?.credentials?.token || '';
+      const token = authData?.credentials?.access_token || '';
 
       console.log('Auth Provider:', provider);
       console.log('Auth Token:', token ? 'Token received' : 'No token');
