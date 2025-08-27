@@ -19,10 +19,6 @@ app.get('/_status', async (_req, res) => {
   res.status(200).send('All Ok! App Running...');
 });
 
-interface FolderParameters {
-  folder_id: string;
-}
-
 // Tools class
 class Tools {
   @tool({
