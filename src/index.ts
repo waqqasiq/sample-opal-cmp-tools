@@ -23,6 +23,11 @@ interface FolderParameters {
   folder_id: string;
 }
 
+interface Parameter {
+  name: string;
+  value: string;
+}
+
 // Tools class
 class Tools {
   @tool({
@@ -37,14 +42,6 @@ class Tools {
   })
   async getCmpRootFolders(_body: any, authData?: any) {
     try {
-
-      const provider = authData?.provider || '';
-      const token = authData?.credentials?.access_token || '';
-
-      console.log('Auth Provider:', provider);
-      console.log('Auth Token:', token ? 'Token received' : 'No token');
-      console.log('token ', token);
-
       const folders = await getRootFolders(authData);
       return { folders };
     } catch (error: any) {
@@ -64,14 +61,6 @@ class Tools {
   })
   async getCmpFields(_body: any, authData?: any) {
     try {
-
-      const provider = authData?.provider || '';
-      const token = authData?.credentials?.access_token || '';
-
-      console.log('Auth Provider:', provider);
-      console.log('Auth Token:', token ? 'Token received' : 'No token');
-      console.log('token ', token);
-
       const fields = await getAllFields(authData);
       return { fields };
     }
@@ -92,14 +81,6 @@ class Tools {
   })
   async getCmpAllFolders(_body: any, authData?: any) {
     try {
-
-      const provider = authData?.provider || '';
-      const token = authData?.credentials?.access_token || '';
-
-      console.log('Auth Provider:', provider);
-      console.log('Auth Token:', token ? 'Token received' : 'No token');
-      console.log('token ', token);
-
       const folders = await getAllFolders(authData);
       return { folders };
     } catch (error: any) {
@@ -107,7 +88,7 @@ class Tools {
       throw new Error('Failed to fetch all CMP folders');
     }
   }
-  
+
   @tool({
     name: 'get_cmp_folder_and_its_children',
     description: 'Fetch a CMP folder by ID including all nested child folders',
@@ -127,8 +108,14 @@ class Tools {
   })
   async getCmpFolderAndItsChildren(body: any, authData?: any) {
     try {
-      const params = body.parameters as FolderParameters;
-      const folder = await getFolderWithChildren(params.folder_id, authData);
+      const params = body.parameters as Parameter[];
+      const folderId = params.find(p => p.name === "folder_id")?.value;
+
+      if (!folderId) {
+        throw new Error("Missing required parameter: folder_id");
+      }
+
+      const folder = await getFolderWithChildren(folderId, authData);
       return { folder };
     } catch (error: any) {
       console.error("Error fetching CMP folder with children:", error.message);
