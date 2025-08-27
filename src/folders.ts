@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CMP_BASE_URL } from './config';
-// import { getHeaderValues } from './auth';
+import { AuthData } from './types/auth';
 
 export interface IFolder {
   id: string;
@@ -17,19 +17,6 @@ export interface IFolder {
   };
   children?: IFolder[];
   [key: string]: any;
-}
-
-export interface AuthData {
-  provider: string;
-  credentials: {
-    token_type: string;
-    access_token: string;
-    org_sso_id: string;
-    user_id: string;
-    instance_id: string;
-    customer_id: string;
-    product_sku: string;
-  }
 }
 
 function generateNumericId() {
