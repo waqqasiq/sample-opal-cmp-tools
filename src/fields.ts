@@ -34,7 +34,7 @@ export const getAllFields = async (authData: AuthData): Promise<IField[]> => {
     //   const headers = await getHeaderValues();
     const headers = {
         'Accept': 'application/json',
-        'x-auth-token-type': authData.provider,
+        'x-auth-token-type': 'opti-id',
         'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
         'Accept-Encoding': 'gzip',
         'x-request-id': generateNumericId(),

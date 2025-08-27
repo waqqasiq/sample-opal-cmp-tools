@@ -41,16 +41,15 @@ function generateNumericId() {
 }
 
 
-
 export const getRootFolders = async (authData: AuthData): Promise<IFolder[]> => {
   // const headers = await getHeaderValues();
   const headers = {
-    'Accept': 'application/json',
-    'x-auth-token-type': authData.provider,
-    'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
-    'Accept-Encoding': 'gzip',
-    'x-request-id': generateNumericId(),
-    'x-org-sso-id': authData.credentials.org_sso_id
+    "Accept": `application/json`,
+    "x-auth-token-type": 'opti-id',
+    "Authorization": `${authData.credentials.token_type} ${authData.credentials.access_token}`,
+    "Accept-Encoding": `gzip`,
+    'x-request-id': `${generateNumericId()}`,
+    'x-org-sso-id': `${authData.credentials.org_sso_id}`
   }
 
   const pageSize = 100;
@@ -88,7 +87,7 @@ export const getAllFolders = async (authData: AuthData): Promise<IFolder[]> => {
 
   const headers = {
     'Accept': 'application/json',
-    'x-auth-token-type': authData.provider,
+    "x-auth-token-type": 'opti-id',
     'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
     'Accept-Encoding': 'gzip',
     'x-request-id': generateNumericId(),
@@ -139,7 +138,7 @@ export const getFolderWithChildren = async (folderId: string, authData: AuthData
 
   const headers = {
     'Accept': 'application/json',
-    'x-auth-token-type': authData.provider,
+    "x-auth-token-type": 'opti-id',
     'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
     'Accept-Encoding': 'gzip',
     'x-request-id': generateNumericId(),
