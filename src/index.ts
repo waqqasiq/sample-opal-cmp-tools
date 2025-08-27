@@ -23,11 +23,6 @@ interface FolderParameters {
   folder_id: string;
 }
 
-interface Parameter {
-  name: string;
-  value: string;
-}
-
 // Tools class
 class Tools {
   @tool({
@@ -108,8 +103,8 @@ class Tools {
   })
   async getCmpFolderAndItsChildren(body: any, authData?: any) {
     try {
-      const params = body.parameters as Parameter[];
-      const folderId = params.find(p => p.name === "folder_id")?.value;
+      const params = body.parameters as FolderParameters;
+      const folderId = params.folder_id;
 
       if (!folderId) {
         throw new Error("Missing required parameter: folder_id");
