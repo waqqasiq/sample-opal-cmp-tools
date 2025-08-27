@@ -104,9 +104,8 @@ class Tools {
   async getCmpFolderAndItsChildren(body: any, authData?: any) {
     try {
       console.log("DEBUG body:", body);
-      console.log("DEBUG body.parameters:", body?.parameters);
 
-      const folderId = (body?.parameters as any)?.folder_id;
+      const folderId = body.folder_id;
 
       if (!folderId) {
         throw new Error("Missing required parameter: folder_id");
