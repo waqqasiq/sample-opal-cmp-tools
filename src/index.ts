@@ -1,6 +1,6 @@
 import express from 'express';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders, getAllFolders } from './folders';
+import { getRootFolders, getAllFolders, getFolderWithChildren } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -11,13 +11,17 @@ new ToolsService(app);
 
 // Common routes
 app.get('/', async (_req, res) => {
-  res.send('Hello, TypeScript with Express!');
+  res.send('Hello, TypeScript with Express!!');
 });
 
 app.get('/_status', async (_req, res) => {
-  console.log('All Ok! App running...');
-  res.status(200).send('All Ok! App running...');
+  console.log('All Ok! App Running...');
+  res.status(200).send('All Ok! App Running...');
 });
+
+interface FolderParameters {
+  folder_id: string;
+}
 
 // Tools class
 class Tools {
@@ -41,7 +45,7 @@ class Tools {
       console.log('Auth Token:', token ? 'Token received' : 'No token');
       console.log('token ', token);
 
-      const folders = await getRootFolders();
+      const folders = await getRootFolders(authData);
       return { folders };
     } catch (error: any) {
       console.error('Error fetching CMP root folders:', error.message);
@@ -68,7 +72,7 @@ class Tools {
       console.log('Auth Token:', token ? 'Token received' : 'No token');
       console.log('token ', token);
 
-      const fields = await getAllFields();
+      const fields = await getAllFields(authData);
       return { fields };
     }
     catch (error: any) {
@@ -96,11 +100,39 @@ class Tools {
       console.log('Auth Token:', token ? 'Token received' : 'No token');
       console.log('token ', token);
 
-      const folders = await getAllFolders();
+      const folders = await getAllFolders(authData);
       return { folders };
     } catch (error: any) {
       console.error('Error fetching all CMP folders:', error.message);
       throw new Error('Failed to fetch all CMP folders');
+    }
+  }
+  
+  @tool({
+    name: 'get_cmp_folder_and_its_children',
+    description: 'Fetch a CMP folder by ID including all nested child folders',
+    parameters: [
+      {
+        name: "folder_id",
+        type: ParameterType.String,
+        description: "The CMP folder ID to fetch",
+        required: true,
+      }
+    ],
+    authRequirements: {
+      provider: 'OptiID',
+      scopeBundle: 'scheme',
+      required: true
+    }
+  })
+  async getCmpFolderAndItsChildren(body: any, authData?: any) {
+    try {
+      const params = body.parameters as FolderParameters;
+      const folder = await getFolderWithChildren(params.folder_id, authData);
+      return { folder };
+    } catch (error: any) {
+      console.error("Error fetching CMP folder with children:", error.message);
+      throw new Error("Failed to fetch CMP folder with children");
     }
   }
 }

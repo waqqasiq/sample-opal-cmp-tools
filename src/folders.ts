@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CMP_BASE_URL } from './config';
-import { getHeaderValues } from './auth';
+// import { getHeaderValues } from './auth';
 
 export interface IFolder {
   id: string;
@@ -19,9 +19,40 @@ export interface IFolder {
   [key: string]: any;
 }
 
+export interface AuthData {
+  provider: string;
+  credentials: {
+    token_type: string;
+    access_token: string;
+    org_sso_id: string;
+    user_id: string;
+    instance_id: string;
+    customer_id: string;
+    product_sku: string;
+  }
+}
 
-export const getRootFolders = async (): Promise<IFolder[]> => {
-  const headers = await getHeaderValues();
+function generateNumericId() {
+  let id = '';
+  for (let i = 0; i < 10; i++) {
+    id += Math.floor(Math.random() * 10); // digits 0-9
+  }
+  return id;
+}
+
+
+
+export const getRootFolders = async (authData: AuthData): Promise<IFolder[]> => {
+  // const headers = await getHeaderValues();
+  const headers = {
+    'Accept': 'application/json',
+    'x-auth-token-type': authData.provider,
+    'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
+    'Accept-Encoding': 'gzip',
+    'x-request-id': generateNumericId(),
+    'x-org-sso-id': authData.credentials.org_sso_id
+  }
+
   const pageSize = 100;
   let offset = 0;
   let allFolders: IFolder[] = [];
@@ -52,8 +83,18 @@ export const getRootFolders = async (): Promise<IFolder[]> => {
 /**
  * Fetch folders recursively, including all nested child folders
  */
-export const getAllFolders = async (): Promise<IFolder[]> => {
-  const headers = await getHeaderValues();
+export const getAllFolders = async (authData: AuthData): Promise<IFolder[]> => {
+  // const headers = await getHeaderValues();
+
+  const headers = {
+    'Accept': 'application/json',
+    'x-auth-token-type': authData.provider,
+    'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
+    'Accept-Encoding': 'gzip',
+    'x-request-id': generateNumericId(),
+    'x-org-sso-id': authData.credentials.org_sso_id
+  }
+
   const pageSize = 100;
   let offset = 0;
   let allFolders: IFolder[] = [];
@@ -91,4 +132,39 @@ export const getAllFolders = async (): Promise<IFolder[]> => {
 
   // return only root folders
   return allFolders.filter(f => !f.parent_folder_id);
+};
+
+export const getFolderWithChildren = async (folderId: string, authData: AuthData): Promise<IFolder> => {
+  // const headers = await getHeaderValues();
+
+  const headers = {
+    'Accept': 'application/json',
+    'x-auth-token-type': authData.provider,
+    'Authorization': authData.credentials.token_type + ' ' + authData.credentials.access_token,
+    'Accept-Encoding': 'gzip',
+    'x-request-id': generateNumericId(),
+    'x-org-sso-id': authData.credentials.org_sso_id
+  }
+
+  // fetch the base folder
+  const url = `${CMP_BASE_URL}/v3/folders/${folderId}`;
+  const res = await axios.get(url, { headers });
+  const folder: IFolder = res.data;
+  folder.children = [];
+
+  // recursive helper to populate children
+  const fetchChildren = async (parent: IFolder) => {
+    if (parent.links?.child_folders) {
+      const childRes = await axios.get(parent.links.child_folders, { headers });
+      const children: IFolder[] = childRes.data?.data || [];
+      parent.children = children;
+      for (const child of children) {
+        await fetchChildren(child);
+      }
+    }
+  };
+
+  await fetchChildren(folder);
+
+  return folder;
 };
