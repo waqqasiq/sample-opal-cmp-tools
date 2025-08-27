@@ -31,7 +31,7 @@ class Tools {
     parameters: [], // no parameters needed for root folders
     authRequirements: {
       provider: 'OptiID',
-      scopeBundle: 'scheme',
+      scopeBundle: 'default',
       required: true
     }
   })
@@ -58,7 +58,7 @@ class Tools {
     parameters: [],
     authRequirements: {
       provider: 'OptiID',
-      scopeBundle: 'scheme',
+      scopeBundle: 'default',
       required: true
     }
   })
@@ -86,7 +86,7 @@ class Tools {
     parameters: [],
     authRequirements: {
       provider: 'OptiID',
-      scopeBundle: 'scheme',
+      scopeBundle: 'default',
       required: true
     }
   })
@@ -121,7 +121,7 @@ class Tools {
     ],
     authRequirements: {
       provider: 'OptiID',
-      scopeBundle: 'scheme',
+      scopeBundle: 'default',
       required: true
     }
   })
