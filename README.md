@@ -10,6 +10,9 @@
    npm run dev
    ```
 
+> By default, the project runs at [http://localhost:8000](http://localhost:8000) unless a different `PORT` is supplied in your `.env` file.
+
+
 ## Build project
 
 1. Build for production:
