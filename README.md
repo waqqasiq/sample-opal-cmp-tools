@@ -70,9 +70,9 @@ Once your application is running and exposed via ngrok, register your tools with
    From your ngrok terminal output, copy the `https://` forwarding URL.
 
 2. **Navigate to Opal Tools Registry**  
-   - Go to [https://opal.optimizely.com/](Optimizely Opal)  
-   - Navigate to [https://opal.optimizely.com/tools](Tools Registry page)
-   - Click "Add Tool Registry"
+   - Go to [Optimizely Opal](https://opal.optimizely.com/)  
+   - In the Opal interface, navigate to the **Tools Registry** page: [https://opal.optimizely.com/tools](https://opal.optimizely.com/tools)  
+   - Click **Add Tool Registry**
 
 3. **Configure Tool Registry**
    - **Registry URL:** `<your-ngrok-https-url>/discovery`
