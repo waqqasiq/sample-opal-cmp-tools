@@ -71,7 +71,7 @@ Once your application is running and exposed via ngrok, register your tools with
 
 2. **Navigate to Opal Tools Registry**  
    - Go to [Optimizely Opal](https://opal.optimizely.com/)  
-   - In the Opal interface, navigate to the **Tools Registry** page: [https://opal.optimizely.com/tools](https://opal.optimizely.com/tools)  
+   - In the Opal interface, navigate to the [Tools Registry](https://opal.optimizely.com/tools) page  
    - Click **Add Tool Registry**
 
 3. **Configure Tool Registry**
