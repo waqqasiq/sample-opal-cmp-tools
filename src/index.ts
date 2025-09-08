@@ -1,6 +1,6 @@
 import express from 'express';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders, getAllFolders, getFolderWithChildren } from './folders';
+import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -112,6 +112,49 @@ class Tools {
     } catch (error: any) {
       console.error("Error fetching CMP folder with children:", error.message);
       throw new Error("Failed to fetch CMP folder with children");
+    }
+  }
+
+  @tool({
+    name: 'update_asset_folder_location',
+    description: 'Update the folder location of an asset in CMP',
+    parameters: [
+      {
+        name: "asset_id",
+        type: ParameterType.String,
+        description: "The asset in CMP library",
+        required: true,
+      },
+      {
+        name: "folder_id",
+        type: ParameterType.String,
+        description: "The folder ID to move the asset to",
+        required: true,
+      }
+    ],
+    authRequirements: {
+      provider: 'OptiID',
+      scopeBundle: 'default',
+      required: true
+    }
+  })
+  async patchImageFolderLocation(body: any, authData?: any) {
+    try {
+      console.log("DEBUG body:", body);
+
+      if (!body) {
+        throw new Error("Missing required parameter: id (image id)");
+      }
+      if (!body?.folder_id) {
+        throw new Error("Missing required parameter: folder_id");
+      }
+
+      const updatedImage = await patchImageFolder(body.asset_id, body.folder_id, authData);
+      return { image: updatedImage };
+
+    } catch (error: any) {
+      console.error("Error patching CMP image folder:", error.message);
+      throw new Error("Failed to patch CMP image folder");
     }
   }
 }
