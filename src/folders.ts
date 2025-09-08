@@ -156,27 +156,29 @@ export const getFolderWithChildren = async (folderId: string, authData: AuthData
 };
 
 // helper to PATCH CMP image and update folder_id
-export const  patchImageFolder = async (
+export const patchImageFolder = async (
   imageId: string,
   folderId: string,
   authData: AuthData
 ) => {
-  const headers = {
-    Accept: "application/json",
-    "x-auth-token-type": "opti-id",
-    Authorization: authData.credentials.token_type + " " + authData.credentials.access_token,
-    "Accept-Encoding": "gzip",
-    "x-request-id": generateNumericId(),
-    "x-org-sso-id": authData.credentials.org_sso_id,
-    "Content-Type": "application/json"
-  };
+  try {
+    const headers = {
+      Accept: "application/json",
+      "x-auth-token-type": "opti-id",
+      Authorization: authData.credentials.token_type + " " + authData.credentials.access_token,
+      "Accept-Encoding": "gzip",
+      "x-request-id": generateNumericId(),
+      "x-org-sso-id": authData.credentials.org_sso_id,
+      "Content-Type": "application/json"
+    };
 
-  const url = `${CMP_BASE_URL}/v3/images/${imageId}`;
+    const url = `${CMP_BASE_URL}/v3/images/${imageId}`;
+    const payload = { folder_id: folderId };
 
-  const payload = {
-    folder_id: folderId
-  };
-
-  const res = await axios.patch(url, payload, { headers });
-  return res.data;
-}
+    const res = await axios.patch(url, payload, { headers });
+    return res.data;
+  } catch (error: any) {
+    console.error(`Failed to patch image ${imageId} to folder ${folderId}:`, error.message);
+    throw error; // rethrow so caller still handles it
+  }
+};

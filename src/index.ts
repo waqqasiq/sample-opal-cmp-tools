@@ -141,6 +141,7 @@ class Tools {
   async patchImageFolderLocation(body: any, authData?: any) {
     try {
       console.log("DEBUG body:", body);
+      console.log("DEBUG auth:", authData);
 
       if (!body) {
         throw new Error("Missing required parameter: id (image id)");
