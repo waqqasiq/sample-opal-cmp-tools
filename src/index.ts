@@ -1,6 +1,6 @@
 import express from 'express';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder } from './folders';
+import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder, getTaskDetailsFromCMP } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -156,6 +156,41 @@ class Tools {
     } catch (error: any) {
       console.error("Error patching CMP image folder:", error.message);
       throw new Error("Failed to patch CMP image folder");
+    }
+  }
+
+  @tool({
+    name: 'get_task_brief',
+    description: 'Get Details of the Task Brief from CMP',
+    parameters: [
+      {
+        name: "task_id",
+        type: ParameterType.String,
+        description: "The task ID in CMP",
+        required: true,
+      }
+    ],
+    authRequirements: {
+      provider: 'OptiID',
+      scopeBundle: 'default',
+      required: true
+    }
+  })
+  async getTaskBriefDetails(body: any, authData?: any) {
+    try {
+      console.log("DEBUG body:", body);
+      console.log("DEBUG auth:", authData);
+
+      if (!body?.task_id) {
+      throw new Error("Missing required parameter: task_id");
+    }
+
+      const brief = await getTaskDetailsFromCMP(body.task_id, authData);
+      return { brief };
+
+    } catch (error: any) {
+      console.error("Error fetching CMP task brief:", error.message);
+      throw new Error("Failed to fetch CMP task brief");
     }
   }
 }
