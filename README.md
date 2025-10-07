@@ -11,6 +11,14 @@ A TypeScript library and Express server for building and exposing Optimizely CMP
    npm install
    ```
 
+   > **Note:** If TypeScript development dependencies are not already installed, run the following command:
+   > ```bash
+   > npm install --save-dev typescript ts-node-dev @types/node @types/express
+   > ```
+   > These packages are required for compiling and running the TypeScript code locally.  
+   > They are already listed in `package.json` under **devDependencies**, but you can manually install them if needed.
+
+
 2. Start the development server:
    ```
    npm run dev
