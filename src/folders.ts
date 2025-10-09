@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { CMP_BASE_URL } from './config';
 import { AuthData } from './types/auth';
 
@@ -202,7 +202,14 @@ export const getTaskDetailsFromCMP = async (
 
     const res = await axios.get(url, { headers });
     return res.data;
+
   } catch (error: any) {
+    // Handle 404 gracefully
+    if (isAxiosError(error) && error.response && error.response.status === 404) {
+      console.warn(`Task ${taskId} has no brief`);
+      return {};
+    }
+
     console.error(`Failed to get task ${taskId}`, error.message);
     throw error;
   }

@@ -186,6 +186,11 @@ class Tools {
     }
 
       const brief = await getTaskDetailsFromCMP(body.task_id, authData);
+      
+      if (Object.keys(brief).length === 0) {
+        return { message: "No brief available for this task." };
+      }
+      
       return { brief };
 
     } catch (error: any) {
