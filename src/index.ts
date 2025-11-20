@@ -1,6 +1,6 @@
 import express from 'express';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder, getTaskDetailsFromCMP } from './folders';
+import { createMilestoneInCMP, getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder, getTaskDetailsFromCMP } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -182,20 +182,89 @@ class Tools {
       console.log("DEBUG auth:", authData);
 
       if (!body?.task_id) {
-      throw new Error("Missing required parameter: task_id");
-    }
+        throw new Error("Missing required parameter: task_id");
+      }
 
       const brief = await getTaskDetailsFromCMP(body.task_id, authData);
-      
+
       if (Object.keys(brief).length === 0) {
         return { message: "No brief available for this task." };
       }
-      
+
       return { brief };
 
     } catch (error: any) {
       console.error("Error fetching CMP task brief:", error.message);
       throw new Error("Failed to fetch CMP task brief");
+    }
+  }
+
+  @tool({
+    name: 'create_milestone_within_campaign',
+    description: 'Create a milestone inside a CMP campaign',
+    parameters: [
+      {
+        name: "title",
+        type: ParameterType.String,
+        description: "Title of the milestone (1-80 chars)",
+        required: true,
+      },
+      {
+        name: "description",
+        type: ParameterType.String,
+        description: "Optional milestone description (1-250 chars)",
+        required: false,
+      },
+      {
+        name: "campaign_id",
+        type: ParameterType.String,
+        description: "CMP campaign ID",
+        required: true,
+      },
+      {
+        name: "due_date",
+        type: ParameterType.String,
+        description: "Due date in ISO 8601 UTC format",
+        required: true,
+      },
+      {
+        name: "hex_color",
+        type: ParameterType.String,
+        description: "Hex color code for the milestone",
+        required: true,
+      },
+      {
+        name: "tasks",
+        type: ParameterType.List,
+        description: "List of task IDs to associate with the milestone",
+        required: false
+      }
+    ],
+    authRequirements: {
+      provider: 'OptiID',
+      scopeBundle: 'default',
+      required: true
+    }
+  })
+  async createMilestoneWithinCampaign(body: any, authData?: any) {
+    try {
+      console.log("DEBUG body:", body);
+      console.log("DEBUG auth:", authData);
+
+      // Required fields validation
+      if (!body.title || !body.due_date || !body.hex_color) {
+        throw new Error("Missing required fields: title, due_date, hex_color");
+      }
+
+      const milestone = await createMilestoneInCMP(body, authData);
+
+      return {
+        message: "Milestone created successfully",
+        milestone,
+      };
+    } catch (error: any) {
+      console.error("Error creating milestone:", error.message);
+      throw new Error("Failed to create milestone in CMP");
     }
   }
 }

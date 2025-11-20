@@ -214,3 +214,43 @@ export const getTaskDetailsFromCMP = async (
     throw error;
   }
 };
+
+export const createMilestoneInCMP = async (
+  payload: any,
+  authData: AuthData
+) => {
+  try {
+    const headers = {
+      Accept: "application/json",
+      "x-auth-token-type": "opti-id",
+      Authorization: `${authData.credentials.token_type} ${authData.credentials.access_token}`,
+      "Accept-Encoding": "gzip",
+      "x-request-id": generateNumericId(),
+      "x-org-sso-id": authData.credentials.org_sso_id,
+      "Content-Type": "application/json",
+    };
+
+    const url = `${CMP_BASE_URL}/v3/milestones`;
+
+    const requestBody = {
+      title: payload.title,
+      description: payload.description || null,
+      campaign_id: payload.campaign_id,
+      due_date: payload.due_date,
+      hex_color: payload.hex_color,
+      tasks: payload.tasks || [],
+    };
+
+    const res = await axios.post(url, requestBody, { headers });
+    return res.data;
+
+  } catch (error: any) {
+    console.error("Failed to create milestone:", error.message);
+
+    if (isAxiosError(error) && error.response) {
+      console.error("CMP Response:", error.response.data);
+    }
+
+    throw error;
+  }
+};
