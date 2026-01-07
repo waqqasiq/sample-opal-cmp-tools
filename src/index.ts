@@ -6,7 +6,7 @@ import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder,
 import { getAllFields } from './fields';
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+
 app.use(express.json());
 new ToolsService(app);
 
@@ -335,6 +335,12 @@ class Tools {
 
 new Tools();
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+const PORT = Number(process.env.PORT);
+
+if (!PORT) {
+  throw new Error('PORT env var is required');
+}
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on ${PORT}`);
 });
