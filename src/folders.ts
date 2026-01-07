@@ -224,7 +224,7 @@ export async function getAssetDownloadUrlFromCMP(assetId: string, authData: any)
   };
 
   const res = await axios.get(
-    `${process.env.CMP_BASE_URL}/v3/asset-urls/${assetId}`,
+    `${CMP_BASE_URL}/v3/asset-urls/${assetId}`,
     { headers }
   );
 
