@@ -214,3 +214,19 @@ export const getTaskDetailsFromCMP = async (
     throw error;
   }
 };
+
+
+export async function getAssetDownloadUrlFromCMP(assetId: string, authData: any) {
+  const headers = {
+    Accept: 'application/json',
+    Authorization: `${authData.credentials.token_type} ${authData.credentials.access_token}`,
+    'x-org-sso-id': authData.credentials.org_sso_id,
+  };
+
+  const res = await axios.get(
+    `${process.env.CMP_BASE_URL}/v3/asset-urls/${assetId}`,
+    { headers }
+  );
+
+  return res.data?.url;
+}

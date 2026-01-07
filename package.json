@@ -14,7 +14,8 @@
   "dependencies": {
     "@optimizely-opal/opal-tools-sdk": "^0.1.0-dev",
     "dotenv": "^17.2.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

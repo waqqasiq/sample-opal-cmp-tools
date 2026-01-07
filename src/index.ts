@@ -1,6 +1,8 @@
 import express from 'express';
+import axios from 'axios';
+import xlsx from 'xlsx';
 import { ParameterType, ToolsService, tool } from '@optimizely-opal/opal-tools-sdk';
-import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder, getTaskDetailsFromCMP } from './folders';
+import { getRootFolders, getAllFolders, getFolderWithChildren, patchImageFolder, getTaskDetailsFromCMP, getAssetDownloadUrlFromCMP } from './folders';
 import { getAllFields } from './fields';
 
 const app = express();
@@ -198,6 +200,138 @@ class Tools {
       throw new Error("Failed to fetch CMP task brief");
     }
   }
+  @tool({
+  name: 'validate_assets',
+  description: 'Validate asset URLs listed in a DAM Excel file before migration',
+  parameters: [
+    {
+      name: 'asset_id',
+      type: ParameterType.String,
+      description: 'DAM asset ID of the Excel file containing public URLs',
+      required: true,
+    },
+    {
+      name: 'url_column',
+      type: ParameterType.String,
+      description: 'Column name in the Excel file that contains public asset URLs',
+      required: true,
+    }
+  ],
+  authRequirements: {
+    provider: 'OptiID',
+    scopeBundle: 'default',
+    required: true
+  }
+})
+async validateAssets(body: any, authData?: any) {
+  try {
+    const { asset_id, url_column } = body;
+    const MAX_STREAM_SIZE = 20 * 1024 * 1024; // 20MB
+
+    if (!asset_id || !url_column) {
+      throw new Error('asset_id and url_column are required');
+    }
+
+    console.log('[validate_assets] Starting validation', body);
+
+    // 1. Get Excel download URL
+    const downloadUrl = await getAssetDownloadUrlFromCMP(asset_id, authData);
+
+    // 2. Download Excel
+    const excelRes = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
+    const buffer = Buffer.from(excelRes.data);
+
+    // 3. Parse Excel
+    const workbook = xlsx.read(buffer, { cellDates: true });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = xlsx.utils.sheet_to_json<Record<string, any>>(sheet, { raw: false });
+
+    const seen = new Map<string, string>();
+    const results: any[] = [];
+
+    for (const row of rows) {
+      const rawUrl = row[url_column];
+
+      if (typeof rawUrl !== 'string' || !rawUrl.startsWith('http')) {
+        continue;
+      }
+
+      const asset_url = rawUrl;
+      const filename = decodeURIComponent(
+        new URL(asset_url).pathname.split('/').pop() || 'unknown'
+      );
+
+      let size: number | null = null;
+      let type = '';
+
+      try {
+        const head = await axios.head(asset_url);
+        size = head.headers['content-length']
+          ? Number(head.headers['content-length'])
+          : null;
+        type = head.headers['content-type'] || '';
+      } catch {
+        // fallback ignored for now
+      }
+
+      let status: 'VALID' | 'INVALID' = 'VALID';
+      const reasons: string[] = [];
+
+      if (filename.length > 100) {
+        status = 'INVALID';
+        reasons.push('FILENAME_TOO_LONG');
+      }
+
+      if (!size) {
+        status = 'INVALID';
+        reasons.push('UNKNOWN_FILE_SIZE');
+      } else if (size === 0) {
+        status = 'INVALID';
+        reasons.push('ZERO_BYTE_FILE');
+      } else if (size > MAX_STREAM_SIZE) {
+        status = 'INVALID';
+        reasons.push('FILE_TOO_LARGE');
+      }
+
+      const dupKey = `${filename}-${size}`;
+      if (seen.has(dupKey)) {
+        status = 'INVALID';
+        reasons.push('DUPLICATE');
+      } else {
+        seen.set(dupKey, asset_url);
+      }
+
+      results.push({
+        asset_url,
+        filename,
+        filename_length: filename.length,
+        size_bytes: size,
+        content_type: type,
+        status,
+        validation_reasons: reasons.join('|')
+      });
+    }
+
+    const summary = {
+      total_assets: results.length,
+      valid_assets: results.filter((r) => r.status === 'VALID').length,
+      invalid_assets: results.filter((r) => r.status === 'INVALID').length
+    };
+
+    console.log('[validate_assets] Completed', summary);
+
+    return {
+      status: 'SUCCESS',
+      summary,
+      results
+    };
+
+  } catch (error: any) {
+    console.error('[validate_assets] Failed', error.message);
+    throw new Error(`validate_assets failed: ${error.message}`);
+  }
+}
+
 }
 
 new Tools();
