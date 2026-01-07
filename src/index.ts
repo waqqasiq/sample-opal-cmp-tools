@@ -335,7 +335,7 @@ class Tools {
 
 new Tools();
 
-const PORT = Number(process.env.PORT);
+const PORT = 8000;
 
 if (!PORT) {
   throw new Error('PORT env var is required');
