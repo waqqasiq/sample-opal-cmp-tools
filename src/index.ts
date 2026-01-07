@@ -8,7 +8,6 @@ import { getAllFields } from './fields';
 const app = express();
 const PORT = process.env.PORT || 8000;
 app.use(express.json());
-
 new ToolsService(app);
 
 // Common routes
