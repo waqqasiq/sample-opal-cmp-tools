@@ -335,10 +335,10 @@ class Tools {
 
 new Tools();
 
-const PORT = 8000;
+const PORT = Number(process.env.PORT);
 
 if (!PORT) {
-  throw new Error('PORT env var is required');
+  throw new Error('PORT environment variable is required');
 }
 
 app.listen(PORT, '0.0.0.0', () => {
